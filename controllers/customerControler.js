@@ -58,6 +58,20 @@ const addCustomer = asyncHandler(async (req, res) => {
     throw new Error("All fields are mandatory");
   }
 
+  const emailExists = await customerDetails.findOne({ email });
+  const phoneNumberExists = await customerDetails.findOne({ email });
+
+  if (emailExists && phoneNumberExists) {
+    res.status(400);
+    throw new Error("Both email and phone number already exist!");
+  } else if (emailExists) {
+    res.status(400);
+    throw new Error("email already exist!");
+  } else if (phoneNumberExists) {
+    res.status(400);
+    throw new Error("phone number already exist!");
+  }
+
   const addCustomer = await customerDetails.create({
     firstName,
     lastName,

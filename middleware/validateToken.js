@@ -27,9 +27,17 @@ const validateToken = asyncHandler(async (req, res, next) => {
         if (err) {
           console.error("Token verification failed:", err.message);
           res.status(401);
-          throw new Error("user is not authorized");
+          throw new Error("Token verification failed: unauthorized");
         }
+
         console.log(">>>", decoded);
+
+        // Here, we manually check for expiry (optional, as JWT does this by default)
+        const currentTime = Date.now() / 1000; // in seconds
+        if (decoded.exp && decoded.exp < currentTime) {
+          res.status(401);
+          throw new Error("Oops! Your session has ended. Try again.58");
+        }
 
         const expectedjwtid = `unique-token-2020${decoded.user.id}`;
         if (decoded.jti !== expectedjwtid) {
